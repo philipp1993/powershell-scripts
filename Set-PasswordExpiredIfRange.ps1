@@ -56,7 +56,7 @@ foreach ($user in $GroupMembers)
 			$user.Name | Out-File $logfile -Append
 			"LastSet: "+$userDetails.passwordlastset | Out-File $logfile -Append
 			"Expires: "+$userDetails.passwordlastset.AddDays($passwordPolicy.MaxPasswordAge.Days) | Out-File $logfile -Append
-			#Set-ADUser -Identity $user -ChangePasswordAtLogon $true | Out-File $logfile -Append
+			Set-ADUser -Identity $user -ChangePasswordAtLogon $true | Out-File $logfile -Append
 			"" | Out-File $logfile -Append #empty line to make the log more readable
 		}	
 	}
