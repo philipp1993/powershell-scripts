@@ -84,9 +84,8 @@ write-host "<prtg>"
 for ($i=0; $i -le $ResultArray["Left"].Count-1; $i++)  
 {
     $LagtimeInMinutes = 0
-
     #snmpwalk outputs lagtime in human readable format like "4 days, 18:59:55.84"
-    if($ResultArray["Lag"][$i] -like "*days*")#only if above 24 hours
+    if($ResultArray["Lag"][$i] -like "*day*")#only if above 24 hours
     {
         $LagtimeSplit = $ResultArray["Lag"][$i] -split " "
         $LagTimeInDays = [int]$LagtimeSplit[0] #contains the number of days (4)
