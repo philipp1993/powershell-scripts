@@ -29,14 +29,19 @@ None. You cannot pipe objects.
 .OUTPUTS
 None. Output is written to log file.
 
+.LINK
+http://github.com/philipp1993/powershell-scripts
+
 .EXAMPLE
 C:\PS> Set-PasswordExpiredIfRange
 
 .EXAMPLE
 C:\PS> Set-PasswordExpiredIfRange Group1 5 90 
 
-.LINK
-http://github.com/philipp1993/powershell-scripts
+.NOTES
+    Author: Philipp Koch
+    Created: 2017-02-14
+    Updated: 2017-02-16
 #>
 
 #Requires -Modules ActiveDirectory
