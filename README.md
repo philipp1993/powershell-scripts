@@ -9,8 +9,8 @@ But keep in mind: if a bug/improvement requires several hours to fix it and I'm 
 
 | script   | description   | environment |
 |----------|---------------|------------|
-| [Set-PasswordExpiredIfRange](../master/Set-PasswordExpiredIfRange/Set-PasswordExpiredIfRange.ps1) | Set 'user must change password at next logon' for users whose password will expire in X days. | Active Directory |
-| [Get-NetAppSnapmirrorLag](../master/Get-NetAppSnapmirrorLag/Get-NetAppSnapmirrorLag.ps1) | Outputs a [PRTG](https://www.paessler.com/prtg) XML with all Snapmirror relationships and their lagtime   | NetApp + PRTG |
-| [Get-VeeamJobResults](../master/Get-VeeamJobResults/Get-VeeamJobResults.ps1) | Outputs a [PRTG](https://www.paessler.com/prtg) XML with all Veeam Jobs and the result of their last run | Veeam + PRTG |
+| [Set-PasswordExpiredIfRange](../master/Set-PasswordExpiredIfRange/) | Set 'user must change password at next logon' for users whose password will expire in X days. | Active Directory |
+| [Get-NetAppSnapmirrorLag](../master/Get-NetAppSnapmirrorLag/) | Outputs a [PRTG](https://www.paessler.com/prtg) XML with all Snapmirror relationships and their lagtime   | NetApp + PRTG |
+| [Get-VeeamJobResults](../master/Get-VeeamJobResults/) | Outputs a [PRTG](https://www.paessler.com/prtg) XML with all Veeam Jobs and the result of their last run | Veeam + PRTG |
 
 _more to come_
