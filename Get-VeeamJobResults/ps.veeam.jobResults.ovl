@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <ValueLookup id="ps.veeam.jobResults" desiredValue="0" undefinedState="olsNone">
+    <Lookups>
+      <SingleInt state="Ok" value="0">
+        Success
+      </SingleInt>
+      <SingleInt state="Warning" value="1">
+        Warning
+      </SingleInt>
+      <SingleInt state="Error" value="2">
+        Error
+      </SingleInt>
+    </Lookups>
+  </ValueLookup>
