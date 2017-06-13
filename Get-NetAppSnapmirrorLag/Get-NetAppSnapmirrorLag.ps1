@@ -194,6 +194,7 @@ foreach($SnapmirrorRelationship in $Snapmirrors)
     if($LagtimeInMinutes -gt $BiggestLagtime)
     {
         $PRTGText =$SnapmirrorRelationship.SourceLocation + "-" + $SnapmirrorRelationship.DestinationLocation
+        $BiggestLagtime = $LagtimeInMinutes
     }
 }
 
