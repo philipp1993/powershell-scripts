@@ -3,9 +3,7 @@
 Various powershell scripts written for work.
 Every script is provided 'as is'.
 
-Pull requests and issues are welcome!
-
-But keep in mind: if a bug/improvement requires several hours to fix it and I'm not directly affected by it I probably won't fix it.  
+Pull requests and issues are welcome!  
 
 | script   | description   | environment |
 |----------|---------------|------------|

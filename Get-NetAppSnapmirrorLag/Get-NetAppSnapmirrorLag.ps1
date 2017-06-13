@@ -47,10 +47,10 @@ PRTG Style XML with each NetApp Snapmirror relationship as sensor channel.
 http://github.com/philipp1993/powershell-scripts
 
 .EXAMPLE
-C:\PS> Get-NetAppSnapmirrorLagtime netapp.company.local h 25 30
+C:\PS> Get-NetAppSnapmirrorLagtime netapp.company.local root password123 h 25 30
 
 .EXAMPLE
-C:\PS> Get-NetAppSnapmirrorLagtime netapp.company.local 
+C:\PS> Get-NetAppSnapmirrorLagtime netapp.company.local root password123
 
 .NOTES
     Author: Philipp Koch
