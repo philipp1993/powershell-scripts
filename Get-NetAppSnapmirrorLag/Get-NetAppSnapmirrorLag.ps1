@@ -8,13 +8,25 @@ Channel names are FilerA:volA - FilerB:volB.
 The message of the sensor is set to the relationship name with the biggest lag time.
 For more infos see the parameter descriptions.
 
-Tested against Data OnTap 8.1.4
+Tested against Data OnTap 8.2.4P6 7-Mode
 
-The snmapwalk.exe is required in the scripts directory. 
-https://syslogwatcher.com/cmd-tools/snmp-walk/
+This script requires the NetApp Powershell module.
+http://mysupport.netapp.com/tools/info/ECMLP2310788I.html?productID=61926
 
 .PARAMETER TargetHost
 DNS name or IP of the NetApp filer. You can use the %host parameter of PRTG 
+
+.PARAMETER User
+User name for the NetApp. You can use the %linuxuser parameter of PRTG 
+
+.PARAMETER Password
+Password for the specified user. You can use the %linuxpassword parameter of PRTG 
+
+.PARAMETER Port
+If set this port will be used to connect to the NetApp. Leave empty for default.
+
+.PARAMETER HTTP
+Set this switch to use HTTP instead of HTTPS.
 
 .PARAMETER TimeFormat
 Specify if the returned lagtime should be in minutes (m) or hours (h)
@@ -35,86 +47,120 @@ PRTG Style XML with each NetApp Snapmirror relationship as sensor channel.
 http://github.com/philipp1993/powershell-scripts
 
 .EXAMPLE
-C:\PS> Get-NetAppSnapmirrorLagtime netapp h 25 30
+C:\PS> Get-NetAppSnapmirrorLagtime netapp.company.local h 25 30
 
 .EXAMPLE
-C:\PS> Get-NetAppSnapmirrorLagtime netapp 
+C:\PS> Get-NetAppSnapmirrorLagtime netapp.company.local 
 
 .NOTES
     Author: Philipp Koch
     Created: 2016-12-08
-    Updated: 2017-02-15
+    Updated: 2017-06-13
 #>
 
 param(
     [Parameter(Mandatory=$true)]
     [string]$TargetHost,
-    [string]$TimeFormat = "h",
+    [Parameter(Mandatory=$true)]
+    [string]$User,
+    [Parameter(Mandatory=$true)]
+    [string]$Password,
+    [int]$Port,
+    [switch]$HTTP,
+    [char]$TimeFormat = "h",
     [int]$WarningThreshold = "25",
     [int]$ErrorThreshold = "30"
 )
 
-$Workingdir = Split-Path $MyInvocation.MyCommand.Path -Parent #Get current working directory
-$Snmpwalk = $Workingdir+"\snmpwalk.exe" #Build the full path of the executable
-
-$ResultArray = @{}
-
-#Output of snmpwalk is one entry per line. This is splitted get an array.
-#Get the left side of the snapmirror relationship.
-$ResultArray["Left"] = $(&$Snmpwalk -r:$Targethost -v:2 -t:1 -os:".1.3.6.1.4.1.789.1.9.20.1.2" -op:".1.3.6.1.4.1.789.1.9.20.1.3" -q) -split [Environment]::NewLine
-#Get the right side of the snapmirror relationship
-$ResultArray["Right"] = $(&$Snmpwalk -r:$Targethost -v:2 -t:1 -os:".1.3.6.1.4.1.789.1.9.20.1.3" -op:".1.3.6.1.4.1.789.1.9.20.1.4" -q) -split [Environment]::NewLine
-#Get the lagtime of the snapmirror relationship
-$ResultArray["Lag"] = $(&$Snmpwalk -r:$Targethost -v:2 -t:1 -os:".1.3.6.1.4.1.789.1.9.20.1.6" -op:".1.3.6.1.4.1.789.1.9.20.1.7" -q) -split [Environment]::NewLine
-
-#Lastcall to snmpwalk.exe failed (the ones before probably also)
-#Return an PRTG Error with output of snmpwalk.exe
-#Check $LASTEXITCODE.
-if($LASTEXITCODE -gt 0)
+try{
+    #Import the OnTap module manually using the following path.
+    Import-Module 'C:\Program Files (x86)\NetApp\NetApp PowerShell Toolkit\Modules\DataONTAP\dataontap.psd1' -ErrorAction Stop -ErrorVariable err
+}
+catch
 {
     write-host "<prtg>"
     write-host "<error>1</error>"
-    write-host "<text>snmpwalk.exe:"$ResultArray["Lag"]"</text>"
+    write-host "<text>NetApp Module couldn't be loaded. Powershell Error: " $err[0].ErrorRecord "</text>"
     write-host "</prtg>"
     exit 1
 }
 
-write-host "<prtg>"
+$pass = $Password | ConvertTo-SecureString -asPlainText -Force
+#Create the credential used to connect to each NetApp controller
+$Credential = New-Object System.Management.Automation.PSCredential($User,$pass)
 
-for ($i=0; $i -le $ResultArray["Left"].Count-1; $i++)  
-{
-    $LagtimeInMinutes = 0
-    #snmpwalk outputs lagtime in human readable format like "4 days, 18:59:55.84"
-    if($ResultArray["Lag"][$i] -like "*day*")#only if above 24 hours
+
+
+try{
+    if(!$Port)
     {
-        $LagtimeSplit = $ResultArray["Lag"][$i] -split " "
-        $LagTimeInDays = [int]$LagtimeSplit[0] #contains the number of days (4)
-        #$LagtimeDays[1] is the string "days,"
-        $ResultArray["Lag"][$i] = $LagtimeSplit[2] #contains the remaing string with the time (18:59:55.84)
-
-        #lets build the lagtime in minutes...
-        $LagtimeInMinutes += $LagTimeInDays * 24 * 60
+        #Sets one of the default ports if no one was specified.
+        if($HTTP)
+        {
+            $Port = 80
+        }
+        else
+        {
+            $Port = 443
+        }
+        
     }
 
-    #the days (if any) are now counted. Lets add the remaining hours and minutes
-    $LagTimeTime = $ResultArray["Lag"][$i] | Get-Date
-
-    $LagtimeInMinutes += $LagTimeTime.Hour * 60 + $LagTimeTime.Minute
-
-    if($TimeFormat -eq "h")
+    if($HTTP)
     {
-        $ResultArray["Lag"][$i] = [math]::round($LagtimeInMinutes / 60,2)
+        Connect-NaController -Name $TargetHost -Credential $Credential -HTTP -Port $Port -ErrorAction Stop -ErrorVariable err
     }
     else
     {
-        $ResultArray["Lag"][$i] = $LagtimeInMinutes   
+        Connect-NaController -Name $TargetHost -Credential $Credential -HTTPS -Port $Port -ErrorAction Stop -ErrorVariable err
+    }
+    
+}
+catch
+{
+    write-host "<prtg>"
+    write-host "<error>1</error>"
+    write-host "<text>Can't connect to the NetApp "$TargetHost ". Powershell Error: " $err[0].ErrorRecord "</text>"
+    write-host "</prtg>"
+    exit 1
+}
+
+$Snapmirrors = Get-NaSnapmirror
+
+#The Sensor will show the relationship with the biggest lagtime as sensor text
+$PRTGText = ""
+$BiggestLagtime = 0
+
+
+write-host "<prtg>"
+
+foreach($SnapmirrorRelationship in $Snapmirrors)
+{ 
+    $LagtimeInMinutes = $SnapmirrorRelationship.LagTime / 60
+
+    if($TimeFormat -eq "h")
+    {
+        $value = [math]::round($LagtimeInMinutes / 60,2)
+    }
+    else
+    {
+        $value = $LagtimeInMinutes   
     }
 
-    #write-host $ResultArray["Left"][$i] - $ResultArray["Right"][$i] - $ResultArray["Lag"][$i]
-
     write-host "<result>"
-    write-host "<channel>"$ResultArray['Left'][$i]"-"$ResultArray['Right'][$i]"</channel>"
-    write-host "<value>"$ResultArray['Lag'][$i]"</value>"
+
+    write-host -NoNewline "<channel>"
+    write-host -NoNewline $SnapmirrorRelationship.SourceLocation
+    write-host -NoNewline " - "
+    write-host -NoNewline $SnapmirrorRelationship.DestinationLocation
+    write-host "</channel>"
+
+
+    $valueText = "<value>"+$value+"</value>"
+    #PRTG needs a dot not a comma for the float value. Replace it if necessary. 
+    $valueText = $valueText.Replace(',','.')
+
+    write-host $valueText
 
     if($TimeFormat -eq "h")
     {
@@ -144,22 +190,13 @@ for ($i=0; $i -le $ResultArray["Left"].Count-1; $i++)
     }
 
     write-host "</result>"
+
+    if($LagtimeInMinutes -gt $BiggestLagtime)
+    {
+        $PRTGText =$SnapmirrorRelationship.SourceLocation + "-" + $SnapmirrorRelationship.DestinationLocation
+    }
 }
 
 
-$biggestLagtime = ($ResultArray["Lag"] | measure -Maximum).Maximum
-
-#Search the relationshipname of the biggestLagtime
-
-#NOTE: I tried $ResultArray["Lag"].IndexOf($biggestLagtime) but it returned -1
-
-for ($i=0; $i -le $ResultArray["Lag"].Count-1; $i++) 
-{
-    if($ResultArray["Lag"][$i] -eq $biggestLagtime)
-    {
-        write-host "<text>"$ResultArray['Left'][$i]"-"$ResultArray['Right'][$i]"</text>"
-        break
-    }
-} 
-
+write-host "<text>" $PRTGText "</text>"
 write-host "</prtg>"
