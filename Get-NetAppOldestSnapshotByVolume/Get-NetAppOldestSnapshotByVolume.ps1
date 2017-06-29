@@ -54,7 +54,7 @@ C:\PS> Get-NetAppSnapmirrorLagtime netapp.company.local
 .NOTES
     Author: Philipp Koch
     Created: 2016-12-08
-    Updated: 2017-06-13
+    Updated: 2017-06-29
 #>
 
 param(
@@ -139,26 +139,23 @@ write-host "<prtg>"
 foreach($Volume in $Volumes)
 { 
 
-    #Get all snapshots for the current volume.
-    $Snapshots = Get-NaSnapshot $Volume.Name
+    #Gets the snapshot with the oldest accesstime.
+    $Snapshot = Get-NaSnapshot $Volume.Name | Sort-Object -Property AccessTime | Select-Object -First 1
 
-    $BiggestSnapAgeCurrent = 0
-
-    foreach($Snaphot in $Snapshots)
+    #No Snapshot for this volume
+    if(!$Snapshot)
     {
-        $SnapAgeInSeconds = $CurrentEpochTime - $Snaphot.AccessTime
-        if($SnapAgeInSeconds -gt $BiggestSnapAgeCurrent)
-        {
-            $BiggestSnapAgeCurrent = $SnapAgeInSeconds
-
-            if($SnapAgeInSeconds -gt $BiggestSnapAgeAll)
-            {
-                $BiggestSnapAgeAll = $SnapAgeInSeconds
-                $PRTGText = $Volume.Name
-            }
-        }
+        continue
     }
 
+    $SnapAgeInSeconds = $CurrentEpochTime - $Snapshot.AccessTime
+
+    if($SnapAgeInSeconds -gt $BiggestSnapAgeAll)
+    {
+        $BiggestSnapAgeAll = $SnapAgeInSeconds
+        $PRTGText = $Volume.Name
+    }
+    
     write-host "<result>"
 
     write-host -NoNewline "<channel>"
@@ -168,22 +165,22 @@ foreach($Volume in $Volumes)
     switch($TimeFormat)
     {
         'm' { 
-            $value = [math]::round($BiggestSnapAgeCurrent / 60,2)
+            $value = [math]::round($SnapAgeInSeconds / 60,2)
             write-host "<CustomUnit>minutes</CustomUnit>"
         }
 
         'h' {
-            $value = [math]::round($BiggestSnapAgeCurrent / 3600,2)
+            $value = [math]::round($SnapAgeInSeconds / 3600,2)
             write-host "<CustomUnit>hours</CustomUnit>"
         }
 
          'd' {
-            $value = [math]::round($BiggestSnapAgeCurrent / 86400,2)
+            $value = [math]::round($SnapAgeInSeconds / 86400,2)
             write-host "<CustomUnit>days</CustomUnit>"
         }
 
         'default' { 
-            $value = [math]::round($BiggestSnapAgeCurrent / 60,2)
+            $value = [math]::round($SnapAgeInSeconds / 60,2)
             write-host "<CustomUnit>minutes</CustomUnit>"
         }
 
