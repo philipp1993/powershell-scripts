@@ -83,7 +83,7 @@ catch
 
 
 #PRTG wants numeric values. Veeam provides the last result as string.
-$ResultLookUp=@{"Success" = 0; "Warning" = 1; "Error" = 2}
+$ResultLookUp=@{"Success" = 0; "Warning" = 1; "Error" = 2; "Failed" = 2}
 
 #Helper function for writing the same XML format for all kind of jobs.
 function Build-XML($Job, $LastResult)
