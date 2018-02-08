@@ -54,7 +54,7 @@ C:\PS> Get-NetAppSnapmirrorLagtime netapp.company.local
 .NOTES
     Author: Philipp Koch
     Created: 2016-12-08
-    Updated: 2017-06-29
+    Updated: 2018-02-08
 #>
 
 param(
@@ -107,11 +107,11 @@ try{
 
     if($HTTP)
     {
-        Connect-NaController -Name $TargetHost -Credential $Credential -HTTP -Port $Port -ErrorAction Stop -ErrorVariable err
+        $info = Connect-NaController -Name $TargetHost -Credential $Credential -HTTP -Port $Port -ErrorAction Stop -ErrorVariable err
     }
     else
     {
-        Connect-NaController -Name $TargetHost -Credential $Credential -HTTPS -Port $Port -ErrorAction Stop -ErrorVariable err
+        $info = Connect-NaController -Name $TargetHost -Credential $Credential -HTTPS -Port $Port -ErrorAction Stop -ErrorVariable err
     }
     
 }
@@ -125,7 +125,7 @@ catch
 }
 
 #Get all volumes to iterate over them
-$Volumes = Get-NaVol
+$Volumes = Get-NaVol | Where-Object {$_.State -eq "online"}
 
 #The Sensor will show the volume with the oldest snapshot as sensor text.
 $PRTGText = ""
