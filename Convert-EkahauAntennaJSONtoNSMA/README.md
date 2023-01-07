@@ -1,4 +1,4 @@
-# Set-PasswordExpiredIfRange.ps1
+# Convert-EkahauAntennaJSONtoNSMA.ps1
 ## SYNOPSIS
 Converts the Ekahau Antenna Data in JSON to the NSMA WG16.99.050 standard format. https://nsma.org/wp-content/uploads/2016/05/wg16_99_050.pdf
 
