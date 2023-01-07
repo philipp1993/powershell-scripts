@@ -8,12 +8,12 @@ C:\PS>Convert-EkahauAntennaJSONtoNSMA\Convert-EkahauAntennaJSONtoNSMA.ps1 [-Inpu
 ```
 
 ## DESCRIPTION
-Ekahau has a wide variety of Antenna pattern which is shipped to every user, but they use their own JSON file format.
-This script converts these JSON Files to NSMA WG16.99.050 standard format which is readably by many software products.
-For example, the "Antenna Pattern Editor 2.0" which can render a 3D view of the antenna pattern. https://www.wireless-planning.com/antenna-pattern-editor
-The Ekahau Antenna Files are located in C:\Program Files\Ekahau\Ekahau AI Pro\Conf\antennas.zip 
-You must extract these ZIP to a folder of choice. 
-See my blog for a more a detailed explanation: https://blog.philipp-koch.net/
+Ekahau has a wide variety of Antenna pattern which is shipped to every user, but they use their own JSON file format.  
+This script converts these JSON Files to NSMA WG16.99.050 standard format which is readably by many software products.  
+For example, the "Antenna Pattern Editor 2.0" which can render a 3D view of the antenna pattern. https://www.wireless-planning.com/antenna-pattern-editor  
+The Ekahau Antenna Files are located in C:\Program Files\Ekahau\Ekahau AI Pro\Conf\antennas.zip  
+You must extract these ZIP to a folder of choice.  
+See my blog for a more a detailed explanation: https://blog.philipp-koch.net/  
 
 ## PARAMETERS
 ### -InputDirectory &lt;String&gt;
