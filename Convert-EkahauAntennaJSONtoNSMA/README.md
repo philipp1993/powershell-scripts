@@ -5,7 +5,7 @@ https://nsma.org/wp-content/uploads/2016/05/wg16_99_050.pdf
 
 ## SYNTAX
 ```powershell
-C:\PS>Convert-EkahauAntennaJSONtoNSMA\Convert-EkahauAntennaJSONtoNSMA.ps1 [-InputDirectory] <String> [-OutputDirectory] <String> [<CommonParameters>]
+C:\PS>.\Convert-EkahauAntennaJSONtoNSMA.ps1 [-InputDirectory] <String> [-OutputDirectory] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -46,13 +46,13 @@ None. Output files are written to the OutputDirectory
 ## EXAMPLES
 ### EXAMPLE 1
 ```powershell
-C:\PS>Set-PasswordExpiredIfRange
+C:\PS>.\Convert-EkahauAntennaJSONtoNSMA.ps1
 ```
 
  
 ### EXAMPLE 2
 ```powershell
-C:\PS>Set-PasswordExpiredIfRange C:\temp\antennas-in\ C:\temp\antennas-out\ 
+C:\PS>.\Convert-EkahauAntennaJSONtoNSMA.ps1 C:\temp\antennas-in\ C:\temp\antennas-out\ 
 ```
 
 
