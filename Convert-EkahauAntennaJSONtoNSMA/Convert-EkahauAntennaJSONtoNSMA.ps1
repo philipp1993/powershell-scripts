@@ -123,30 +123,49 @@ Foreach-Object {
         $CounterConverted++
         "REVNUM:,NSMA WG16.99.050" | Out-File -FilePath $OutputFile
         "REVDAT:,19990520" | Out-File -FilePath $OutputFile -Append
+        "COMNT1:,defaultMounting: " + $Antenna.defaultMounting | Out-File -FilePath $OutputFile -Append 
+        "COMNT2:,apCoupling: " + $Antenna.apCoupling | Out-File -FilePath $OutputFile -Append 
         "ANTMAN:," + $Antenna.accessPointVendorModel.vendor.vendor | Out-File -FilePath $OutputFile -Append 
-        "MODNUM:," + $Antenna.accessPointVendorModel.model.model + " " + $Antenna.frequencyBand  | Out-File -FilePath $OutputFile -Append 
+
+        $LOWFRQ = ""
+        $HGHFRQ = ""
         $PATFRE = ""
+        $frequencyBand = ""
         switch ($Antenna.frequencyBand) {
             "TWO" { 
-                "LOWFRQ:,2412" | Out-File -FilePath $OutputFile -Append
-                "HGHFRQ:,2484" | Out-File -FilePath $OutputFile -Append
+                $LOWFRQ = "2412" 
+                $HGHFRQ = "2484" 
                 $PATFRE = "2412"
+                $frequencyBand = "2.4GHz"
             }
             "FIVE" { 
-                "LOWFRQ:,5150" | Out-File -FilePath $OutputFile -Append
-                "HGHFRQ:,5725" | Out-File -FilePath $OutputFile -Append
+                $LOWFRQ = "5150" 
+                $HGHFRQ = "5725" 
                 $PATFRE = "5150"
+                $frequencyBand = "5GHz"
             }
             "SIX" { 
-                "LOWFRQ:,5925" | Out-File -FilePath $OutputFile -Append
-                "HGHFRQ:,6425" | Out-File -FilePath $OutputFile -Append
+                $LOWFRQ = "5925" 
+                $HGHFRQ = "6425"
                 $PATFRE = "5925"
+                $frequencyBand = "6GHz"
             }
             Default {}
         }
+
+        #Ekahau doesn't sets the "model" value for each AP/Antenna. If it is not set, we will use the filename. 
+        if ($Antenna.accessPointVendorModel.model.model -eq "") {
+            "MODNUM:," + $_.Name.Substring(0, $_.Name.Length - 5)  | Out-File -FilePath $OutputFile -Append 
+        }
+        else {
+            "MODNUM:," + $Antenna.accessPointVendorModel.model.model + " " + $Antenna.antennaTechnology + " " + $frequencyBand  | Out-File -FilePath $OutputFile -Append 
+        }
+         
+        "LOWFRQ:," + $LOWFRQ | Out-File -FilePath $OutputFile -Append
+        "HGHFRQ:," + $HGHFRQ | Out-File -FilePath $OutputFile -Append
         #Ekahau provides the Gain for some antennas. If not, "0" is written to file, since this a mandatory field. 
         "GUNITS:,DBI" | Out-File -FilePath $OutputFile -Append
-        if ($Antenna.manufacturerMaximumGain -ne "NaN") {
+        if ([String]$Antenna.manufacturerMaximumGain -ne "NaN") {
             "MDGAIN:," + $Antenna.manufacturerMaximumGain | Out-File -FilePath $OutputFile -Append
         }
         else {
