@@ -19,17 +19,17 @@ See my blog for a more a detailed explanation: https://blog.philipp-koch.net/
 
 ## PARAMETERS
 ### -InputDirectory &lt;String&gt;
-Select the folder in which you extracted the Ekahau antennas.zip
+Select the folder in which you extracted the Ekahau antennas.zip. If not specified the script will try to get zip in the Ekahau folder and extract it. 
 ```
-REQUIRED?                true
+REQUIRED?                false
 Position?                    1
 Default                 
 ```
  
 ### --OutputDirectory &lt;String&gt;
-Select an existing (empty) folder to which the converted files are written.
+Select a folder to which the converted files are written. If not specified a new subdirectory in InputDirectory will be created. 
 ```
-REQUIRED?                true
+REQUIRED?                false
 Position?                    2
 Default                 1
 ```

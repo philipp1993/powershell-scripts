@@ -11,6 +11,6 @@ Pull requests and issues are welcome!
 | [Get-NetAppSnapmirrorLag](../master/Get-NetAppSnapmirrorLag/) | Outputs a [PRTG](https://www.paessler.com/prtg) XML with all Snapmirror relationships and their lagtime   | NetApp + PRTG |
 | [Get-NetAppOldestSnapshotByVolume](../master/Get-NetAppOldestSnapshotByVolume/) | Outputs a [PRTG](https://www.paessler.com/prtg) XML with all NetApp volumes and the age of their oldest snapshot   | NetApp + PRTG |
 | [Get-VeeamJobResults](../master/Get-VeeamJobResults/) | Outputs a [PRTG](https://www.paessler.com/prtg) XML with all Veeam Jobs and the result of their last run | Veeam + PRTG |
-| [Convert-EkahauAntennaJSONtoNSMA](../master/Convert-EkahauAntennaJSONtoNSMA/) | Converts to Ekahau JSON Antenna Pattern files to NSMA for use with other tools like 3D viewing | Generell Wifi Design |
+| [Convert-EkahauAntennaJSONtoNSMA](../master/Convert-EkahauAntennaJSONtoNSMA/) | Converts to Ekahau JSON Antenna Pattern files to NSMA formated TXT files for use with other tools like 3D viewing | Generell Wifi Design |
 
 _more to come_
